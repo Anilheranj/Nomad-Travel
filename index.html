@@ -925,22 +925,37 @@
 
 </div>
 
-
-<!-- ================================
+    <!-- ================================
      TOAST
 ================================= -->
 
 <div
     class="toast"
-    id="t
+    id="toast"
+    role="status"
+>
+    <span class="toast-icon">
+        ✓
+    </span>
+
+    <span id="toastMessage">
+        Done
+    </span>
+</div>
 
 
-
-
-
-
-<script
+<div
+    class="mobile-overlay"
+    id="mobileOverlay"
+></div>
+    <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
 ></script>
 
 <script src="app.js"></script>
+
+    
+</body>
+</html>
+
+
