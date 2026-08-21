@@ -955,28 +955,872 @@ function setupMobileMenu() {
     );
 }
 
+
+function setupMap() {
 /* =========================================
-   MAP
+   REAL ROUTE MAP
 ========================================= */
+
+let nomadMap = null;
+let nomadRoute = null;
+let nomadMarkers = [];
+let routeSearchTimer = null;
+
+const NOMINATIM_URL =
+    "https://nominatim.openstreetmap.org/search";
+
+const OSRM_URL =
+    "https://router.project-osrm.org/route/v1/driving";
+
 
 function setupMap() {
 
-    $$(".map-pin").forEach(pin => {
+    const mapElement =
+        document.getElementById("nomadMap");
 
-        pin.addEventListener(
+    /*
+     * If the new map doesn't exist,
+     * keep the old map working.
+     */
+    if (!mapElement) {
+
+        $$(".map-pin").forEach(pin => {
+
+            pin.addEventListener(
+                "click",
+                () => {
+
+                    toast(
+                        `${pin.dataset.location} selected`
+                    );
+
+                }
+            );
+
+        });
+
+        return;
+    }
+
+
+    if (typeof L === "undefined") {
+
+        console.error(
+            "Leaflet is not loaded."
+        );
+
+        toast(
+            "Map library failed to load."
+        );
+
+        return;
+    }
+
+
+    nomadMap = L.map(
+        "nomadMap",
+        {
+            zoomControl: true,
+            scrollWheelZoom: false
+        }
+    );
+
+
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            maxZoom: 19,
+
+            attribution:
+                "&copy; OpenStreetMap contributors"
+        }
+    ).addTo(nomadMap);
+
+
+    nomadMap.setView(
+        [30.7333, 76.7794],
+        7
+    );
+
+
+    setupLocationSearch();
+
+    setupRouteButton();
+
+    setupAddStop();
+
+    setupMapExpand();
+}
+
+function setupLocationSearch() {
+
+    document
+        .querySelectorAll(".route-location")
+        .forEach(input => {
+
+            input.addEventListener(
+                "input",
+                () => {
+
+                    input.dataset.selected =
+                        "false";
+
+                    clearTimeout(
+                        routeSearchTimer
+                    );
+
+                    const query =
+                        input.value.trim();
+
+
+                    if (query.length < 3) {
+
+                        hideSuggestions(input);
+
+                        return;
+                    }
+
+
+                    routeSearchTimer =
+                        setTimeout(
+                            () => {
+
+                                searchLocation(
+                                    input,
+                                    query
+                                );
+
+                            },
+                            500
+                        );
+
+                }
+            );
+
+
+            input.addEventListener(
+                "focus",
+                () => {
+
+                    const query =
+                        input.value.trim();
+
+
+                    if (query.length >= 3) {
+
+                        searchLocation(
+                            input,
+                            query
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+}
+async function searchLocation(
+    input,
+    query
+) {
+
+    const picker =
+        input.closest(
+            ".location-picker"
+        );
+
+
+    const suggestions =
+        picker?.querySelector(
+            ".location-suggestions"
+        );
+
+
+    if (!suggestions) return;
+
+
+    suggestions.innerHTML = `
+        <div class="location-suggestion">
+            Searching...
+        </div>
+    `;
+
+
+    suggestions.classList.add("show");
+
+
+    try {
+
+        const url =
+            new URL(
+                NOMINATIM_URL
+            );
+
+
+        url.searchParams.set(
+            "q",
+            query
+        );
+
+
+        url.searchParams.set(
+            "format",
+            "json"
+        );
+
+
+        url.searchParams.set(
+            "limit",
+            "5"
+        );
+
+
+        url.searchParams.set(
+            "addressdetails",
+            "1"
+        );
+
+
+        const response =
+            await fetch(
+                url.toString()
+            );
+
+
+        if (!response.ok) {
+            throw new Error(
+                "Location search failed."
+            );
+        }
+
+
+        const results =
+            await response.json();
+
+
+        suggestions.innerHTML = "";
+
+
+        if (!results.length) {
+
+            suggestions.innerHTML = `
+                <div class="location-suggestion">
+                    No locations found
+                </div>
+            `;
+
+            return;
+        }
+
+
+        results.forEach(result => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type = "button";
+
+            button.className =
+                "location-suggestion";
+
+
+            button.innerHTML = `
+                <strong>
+                    ${escapeHTML(
+                        result.name ||
+                        result.display_name
+                    )}
+                </strong>
+
+                <small>
+                    ${escapeHTML(
+                        result.display_name
+                    )}
+                </small>
+            `;
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    input.value =
+                        result.display_name;
+
+
+                    input.dataset.lat =
+                        result.lat;
+
+
+                    input.dataset.lng =
+                        result.lon;
+
+
+                    input.dataset.selected =
+                        "true";
+
+
+                    hideSuggestions(
+                        input
+                    );
+
+                    toast(
+                        "Location selected"
+                    );
+
+                }
+            );
+
+
+            suggestions.appendChild(
+                button
+            );
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        suggestions.innerHTML = `
+            <div class="location-suggestion">
+                Unable to search locations
+            </div>
+        `;
+    }
+}
+function setupRouteButton() {
+
+    document
+        .getElementById(
+            "calculateRouteBtn"
+        )
+        ?.addEventListener(
+            "click",
+            calculateNomadRoute
+        );
+}
+
+async function calculateNomadRoute() {
+
+    const inputs = [
+        ...document.querySelectorAll(
+            ".route-location"
+        )
+    ];
+
+
+    const selected =
+        inputs.filter(
+            input =>
+                input.dataset.selected ===
+                "true"
+        );
+
+
+    if (
+        selected.length !==
+        inputs.length
+    ) {
+
+        setRouteStatus(
+            "Choose every location from the suggestions.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (selected.length < 2) {
+
+        setRouteStatus(
+            "Choose at least two locations.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const button =
+        document.getElementById(
+            "calculateRouteBtn"
+        );
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Calculating...";
+
+
+    setRouteStatus(
+        "Finding your route..."
+    );
+
+
+    try {
+
+        const coordinates =
+            selected
+                .map(
+                    input =>
+                        `${input.dataset.lng},${input.dataset.lat}`
+                )
+                .join(";");
+
+
+        const url =
+            `${OSRM_URL}/${coordinates}` +
+            "?overview=full&geometries=geojson";
+
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Routing service unavailable."
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data.code !== "Ok" ||
+            !data.routes?.length
+        ) {
+
+            throw new Error(
+                "No route found."
+            );
+        }
+
+
+        drawNomadRoute(
+            selected,
+            data.routes[0]
+        );
+
+
+        updateTripTitle(
+            selected
+        );
+
+
+        setRouteStatus(
+            "Route calculated successfully.",
+            "success"
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        setRouteStatus(
+            error.message,
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+
+        button.textContent =
+            "Calculate route";
+    }
+}
+function drawNomadRoute(
+    inputs,
+    route
+) {
+
+    clearNomadRoute();
+
+
+    nomadRoute =
+        L.geoJSON(
+            route.geometry,
+            {
+                style: {
+                    color: "#064e3b",
+                    weight: 5,
+                    opacity: 0.9
+                }
+            }
+        )
+        .addTo(nomadMap);
+
+
+    inputs.forEach(
+        (input, index) => {
+
+            const lat =
+                Number(
+                    input.dataset.lat
+                );
+
+            const lng =
+                Number(
+                    input.dataset.lng
+                );
+
+
+            const icon =
+                L.divIcon({
+
+                    className: "",
+
+                    html: `
+                        <div class="nomad-marker">
+                            ${index + 1}
+                        </div>
+                    `,
+
+                    iconSize:
+                        [28, 28],
+
+                    iconAnchor:
+                        [14, 14]
+                });
+
+
+            const marker =
+                L.marker(
+                    [lat, lng],
+                    { icon }
+                )
+                .addTo(nomadMap);
+
+
+            marker.bindPopup(
+                `<strong>
+                    ${escapeHTML(
+                        input.value
+                    )}
+                </strong>`
+            );
+
+
+            nomadMarkers.push(
+                marker
+            );
+
+        }
+    );
+
+
+    nomadMap.fitBounds(
+        nomadRoute.getBounds(),
+        {
+            padding: [30, 30]
+        }
+    );
+
+
+    updateRouteSummary(
+        route
+    );
+}
+
+function updateRouteSummary(route) {
+
+    const summary =
+        document.getElementById(
+            "routeSummary"
+        );
+
+    const distance =
+        document.getElementById(
+            "routeDistance"
+        );
+
+    const duration =
+        document.getElementById(
+            "routeDuration"
+        );
+
+
+    if (
+        !summary ||
+        !distance ||
+        !duration
+    ) {
+        return;
+    }
+
+
+    distance.textContent =
+        `${(
+            route.distance / 1000
+        ).toFixed(1)} km`;
+
+
+    const totalMinutes =
+        Math.round(
+            route.duration / 60
+        );
+
+
+    const hours =
+        Math.floor(
+            totalMinutes / 60
+        );
+
+
+    const minutes =
+        totalMinutes % 60;
+
+
+    duration.textContent =
+        hours > 0
+            ? `${hours}h ${minutes}m`
+            : `${minutes}m`;
+
+
+    summary.hidden = false;
+}
+
+function setupAddStop() {
+
+    document
+        .getElementById(
+            "addStopBtn"
+        )
+        ?.addEventListener(
             "click",
             () => {
 
-                toast(
-                    `${pin.dataset.location} selected`
+                const container =
+                    document.getElementById(
+                        "routeInputs"
+                    );
+
+
+                if (!container) return;
+
+
+                const count =
+                    container
+                        .querySelectorAll(
+                            ".route-input-row"
+                        )
+                        .length;
+
+
+                if (count >= 6) {
+
+                    toast(
+                        "Maximum 6 locations."
+                    );
+
+                    return;
+                }
+
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                row.className =
+                    "route-input-row";
+
+
+                row.innerHTML = `
+
+                    <span
+                        class="route-number"
+                    >
+                        ${count + 1}
+                    </span>
+
+                    <div
+                        class="location-picker"
+                    >
+
+                        <input
+                            type="text"
+                            class="route-location"
+                            placeholder="Choose stop"
+                            autocomplete="off"
+                        />
+
+                        <div
+                            class="location-suggestions"
+                        ></div>
+
+                    </div>
+                `;
+
+
+                container.appendChild(
+                    row
                 );
+
+
+                setupLocationSearch();
 
             }
         );
-
-    });
 }
+function clearNomadRoute() {
 
+    if (nomadRoute) {
+
+        nomadMap.removeLayer(
+            nomadRoute
+        );
+
+        nomadRoute = null;
+    }
+
+
+    nomadMarkers.forEach(
+        marker => {
+
+            nomadMap.removeLayer(
+                marker
+            );
+
+        }
+    );
+
+
+    nomadMarkers = [];
+}
+function hideSuggestions(input) {
+
+    input
+        .closest(
+            ".location-picker"
+        )
+        ?.querySelector(
+            ".location-suggestions"
+        )
+        ?.classList.remove(
+            "show"
+        );
+}
+function setRouteStatus(
+    message,
+    type = ""
+) {
+
+    const status =
+        document.getElementById(
+            "routeStatus"
+        );
+
+
+    if (!status) return;
+
+
+    status.textContent =
+        message;
+
+
+    status.className =
+        `route-status ${type}`;
+}
+function updateTripTitle(inputs) {
+
+    const title =
+        document.getElementById(
+            "routeTitle"
+        );
+
+
+    if (!title) return;
+
+
+    const names =
+        inputs.map(
+            input =>
+                input.value
+                    .split(",")[0]
+                    .trim()
+        );
+
+
+    title.textContent =
+        `${names[0]} → ${names[names.length - 1]}`;
+}
+function setupMapExpand() {
+
+    const button =
+        document.getElementById(
+            "expandMapBtn"
+        );
+
+
+    const card =
+        document.querySelector(
+            ".map-card"
+        );
+
+
+    if (!button || !card) return;
+
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            const expanded =
+                card.classList.toggle(
+                    "map-expanded"
+                );
+
+
+            button.textContent =
+                expanded
+                    ? "Close"
+                    : "Expand";
+
+
+            document.body.style.overflow =
+                expanded
+                    ? "hidden"
+                    : "";
+
+
+            setTimeout(
+                () => {
+
+                    nomadMap?.invalidateSize();
+
+                    if (nomadRoute) {
+
+                        nomadMap.fitBounds(
+                            nomadRoute.getBounds(),
+                            {
+                                padding:
+                                    [30, 30]
+                            }
+                        );
+
+                    }
+
+                },
+                300
+            );
+
+        }
+    );
+}
 
 /* =========================================
    MEMORIES
