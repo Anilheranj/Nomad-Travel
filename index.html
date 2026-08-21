@@ -1,0 +1,938 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Nomad Travel — a minimalist budget travel planner."
+    >
+
+    <meta name="theme-color" content="#064e3b">
+
+    <title>Nomad Travel — Budget Travel Planner</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="app">
+
+    <!-- ================================
+         MOBILE HEADER
+    ================================= -->
+
+    <header class="mobile-header">
+
+        <button
+            class="icon-btn"
+            id="mobileMenuBtn"
+            aria-label="Open navigation"
+        >
+            ☰
+        </button>
+
+        <div class="brand compact">
+            <div class="brand-mark">N</div>
+
+            <div class="brand-text">
+                <strong>Nomad</strong>
+                <span>Travel</span>
+            </div>
+        </div>
+
+        <button
+            class="avatar"
+            id="mobileProfileBtn"
+            aria-label="Open profile"
+        >
+            A
+        </button>
+
+    </header>
+
+
+    <!-- ================================
+         SIDEBAR
+    ================================= -->
+
+<!-- MOBILE MENU BUTTON -->
+<button
+    id="mobileMenuBtn"
+    class="mobile-menu-btn"
+    type="button"
+    aria-label="Open navigation"
+    aria-expanded="false"
+>
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+
+
+<!-- MOBILE BACKDROP -->
+<div
+    id="mobileOverlay"
+    class="mobile-overlay"
+></div>
+
+
+<!-- SIDEBAR -->
+<aside
+    id="sidebar"
+    class="sidebar"
+>
+
+    <div class="sidebar-header">
+
+        <a
+            href="#dashboard"
+            class="brand"
+        >
+            <span class="brand-mark">N</span>
+
+            <span>
+                NOMAD
+            </span>
+        </a>
+
+        <button
+            id="mobileCloseBtn"
+            class="mobile-close-btn"
+            type="button"
+            aria-label="Close navigation"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+        <a
+            href="#dashboard"
+            class="nav-item"
+            data-view="dashboard"
+        >
+            <span>⌂</span>
+            <span>Dashboard</span>
+        </a>
+
+
+        <a
+            href="#trips"
+            class="nav-item"
+            data-view="trips"
+        >
+            <span>◫</span>
+            <span>My Trips</span>
+        </a>
+
+
+        <a
+            href="#itinerary"
+            class="nav-item"
+            data-view="itinerary"
+        >
+            <span>☷</span>
+            <span>Itinerary</span>
+        </a>
+
+
+        <a
+            href="#explore"
+            class="nav-item"
+            data-view="explore"
+        >
+            <span>⌕</span>
+            <span>Explore</span>
+        </a>
+
+
+        <a
+            href="#memories"
+            class="nav-item"
+            data-view="memories"
+        >
+            <span>▧</span>
+            <span>Memories</span>
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <button
+            id="themeBtn"
+            class="sidebar-action"
+            type="button"
+        >
+            <span id="themeIcon">☼</span>
+            <span>Appearance</span>
+        </button>
+
+
+        <button
+            id="settingsBtn"
+            class="sidebar-action"
+            type="button"
+        >
+            <span>⚙</span>
+            <span>Settings</span>
+        </button>
+
+    </div>
+
+</aside>
+
+
+
+
+
+
+
+
+
+    <!-- ================================
+         MAIN
+    ================================= -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <p class="eyebrow">
+                    YOUR TRAVEL DASHBOARD
+                </p>
+
+                <h1>
+                    Travel more.
+                    <span>Spend smarter.</span>
+                </h1>
+
+            </div>
+
+
+            <div class="top-actions">
+
+                <button
+                    class="icon-btn notification-btn"
+                    id="notificationBtn"
+                    aria-label="Notifications"
+                >
+                    ♢
+                    <span class="notification-dot"></span>
+                </button>
+
+
+                <button
+                    class="profile-btn"
+                    id="profileBtn"
+                >
+
+                    <span class="avatar">
+                        A
+                    </span>
+
+                    <span class="profile-name">
+                        Anil
+                    </span>
+
+                    <span>
+                        ⌄
+                    </span>
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================================
+             DASHBOARD
+        ================================= -->
+
+        <section id="dashboardView" class="view active-view">
+
+
+            <!-- HERO -->
+
+            <article class="hero-card">
+
+                <div class="hero-content">
+
+                    <div class="hero-status">
+
+                        <span class="status-dot"></span>
+
+                        UPCOMING TRIP
+
+                    </div>
+
+
+                    <h2 id="heroDestination">
+                        Himachal
+                        <br>
+                        Pradesh
+                    </h2>
+
+
+                    <p id="heroRoute">
+                        Chandigarh → Manali → Kasol
+                    </p>
+
+
+                    <div class="hero-info">
+
+                        <div>
+                            <small>DURATION</small>
+                            <strong>07 Days</strong>
+                        </div>
+
+                        <div>
+                            <small>TRAVELERS</small>
+                            <strong>02 People</strong>
+                        </div>
+
+                        <div>
+                            <small>START</small>
+                            <strong>24 Aug</strong>
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="primary-btn"
+                        id="viewTripBtn"
+                    >
+                        View itinerary
+                        <span>→</span>
+                    </button>
+
+                </div>
+
+
+                <div class="hero-image">
+
+                    <div class="image-gradient"></div>
+
+                    <div class="location-badge">
+                        <span>●</span>
+                        Manali
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- BENTO -->
+
+            <div class="bento-grid">
+
+
+                <!-- BUDGET -->
+
+                <article class="card budget-card">
+
+                    <div class="card-top">
+
+                        <div>
+                            <span class="label">
+                                TRIP BUDGET
+                            </span>
+
+                            <h3 id="budgetTotal">
+                                ₹28,500
+                            </h3>
+                        </div>
+
+                        <button
+                            class="more-btn"
+                            data-action="budget-menu"
+                        >
+                            •••
+                        </button>
+
+                    </div>
+
+
+                    <div class="progress">
+
+                        <div
+                            class="progress-bar"
+                            id="budgetProgress"
+                        ></div>
+
+                    </div>
+
+
+                    <div class="budget-summary">
+
+                        <span>
+                            <strong id="budgetSpent">
+                                ₹18,420
+                            </strong>
+                            spent
+                        </span>
+
+                        <span id="budgetPercentage">
+                            65%
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="expense-list"
+                        id="expenseList"
+                    ></div>
+
+
+                    <button
+                        class="text-btn"
+                        id="addExpenseBtn"
+                    >
+                        + Add expense
+                    </button>
+
+                </article>
+
+
+                <!-- WEATHER -->
+
+                <article class="card weather-card">
+
+                    <div class="card-top">
+
+                        <span class="label">
+                            MANALI · TODAY
+                        </span>
+
+                        <span class="weather-icon">
+                            ☀
+                        </span>
+
+                    </div>
+
+
+                    <div class="weather-main">
+
+                        <strong>
+                            22°
+                        </strong>
+
+                        <div>
+                            <b>Sunny</b>
+                            <span>Feels like 21°</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="weather-data">
+
+                        <div>
+                            <small>HUMIDITY</small>
+                            <b>48%</b>
+                        </div>
+
+                        <div>
+                            <small>WIND</small>
+                            <b>8 km/h</b>
+                        </div>
+
+                        <div>
+                            <small>LOCAL TIME</small>
+                            <b id="localTime">
+                                --:--
+                            </b>
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <!-- MAP -->
+
+                <article class="card map-card">
+
+                    <div class="card-top">
+
+                        <div>
+                            <span class="label">
+                                YOUR ROUTE
+                            </span>
+
+                            <h3>
+                                Himachal Road Trip
+                            </h3>
+                        </div>
+
+                        <button
+                            class="small-btn"
+                            id="expandMapBtn"
+                        >
+                            Expand
+                        </button>
+
+                    </div>
+
+
+                    <div class="map">
+
+                        <div class="map-lines"></div>
+
+                        <svg
+                            viewBox="0 0 600 300"
+                            preserveAspectRatio="none"
+                        >
+
+                            <path
+                                d="M80 230 C180 200, 190 100, 300 150 S430 240, 520 70"
+                            />
+
+                        </svg>
+
+
+                        <button
+                            class="map-pin"
+                            style="left:14%;bottom:18%"
+                            data-location="Chandigarh"
+                        >
+                        </button>
+
+
+                        <button
+                            class="map-pin"
+                            style="left:49%;top:43%"
+                            data-location="Manali"
+                        >
+                        </button>
+
+
+                        <button
+                            class="map-pin"
+                            style="right:12%;top:19%"
+                            data-location="Kasol"
+                        >
+                        </button>
+
+
+                        <span
+                            class="map-label"
+                            style="left:8%;bottom:8%"
+                        >
+                            Chandigarh
+                        </span>
+
+
+                        <span
+                            class="map-label"
+                            style="left:46%;top:51%"
+                        >
+                            Manali
+                        </span>
+
+
+                        <span
+                            class="map-label"
+                            style="right:7%;top:27%"
+                        >
+                            Kasol
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <!-- ITINERARY -->
+
+                <article class="card itinerary-card">
+
+                    <div class="card-top">
+
+                        <div>
+                            <span class="label">
+                                ITINERARY
+                            </span>
+
+                            <h3>
+                                Today
+                            </h3>
+                        </div>
+
+                        <button
+                            class="small-btn"
+                            id="viewAllItinerary"
+                        >
+                            View all
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="timeline"
+                        id="timeline"
+                    ></div>
+
+                </article>
+
+
+                <!-- MEMORIES -->
+
+                <article class="card memories-card">
+
+                    <div class="card-top">
+
+                        <div>
+                            <span class="label">
+                                MEMORIES
+                            </span>
+
+                            <h3>
+                                Recent moments
+                            </h3>
+                        </div>
+
+                        <button
+                            class="small-btn"
+                            id="viewMemories"
+                        >
+                            View all
+                        </button>
+
+                    </div>
+
+
+                    <div class="memory-grid">
+
+                        <button
+                            class="memory memory-one"
+                            data-memory="Mountain escape"
+                        >
+                            <span>
+                                Mountain escape
+                            </span>
+                        </button>
+
+                        <button
+                            class="memory memory-two"
+                            data-memory="Road trip"
+                        >
+                            <span>
+                                Road trip
+                            </span>
+                        </button>
+
+                        <button
+                            class="memory memory-three"
+                            data-memory="Kasol"
+                        >
+                            <span>
+                                Kasol
+                            </span>
+                        </button>
+
+                    </div>
+
+                </article>
+
+
+                <!-- MONEY TIP -->
+
+                <article class="card tip-card">
+
+                    <div class="tip-icon">
+                        ₹
+                    </div>
+
+                    <div>
+
+                        <span class="label">
+                            MONEY SAVING TIP
+                        </span>
+
+                        <h3>
+                            Book your stay<br>
+                            3–5 days early.
+                        </h3>
+
+                        <p>
+                            You could save around
+                            ₹1,200 on this trip.
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="tip-arrow"
+                        id="tipBtn"
+                    >
+                        →
+                    </button>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================
+             OTHER VIEWS
+        ================================= -->
+
+        <section
+            id="genericView"
+            class="generic-view"
+        >
+
+            <div class="empty-state">
+
+                <span class="empty-icon">
+                    ✦
+                </span>
+
+                <span class="label">
+                    NOMAD TRAVEL
+                </span>
+
+                <h2 id="genericTitle">
+                    My Trips
+                </h2>
+
+                <p id="genericText">
+                    Your travel workspace will appear here.
+                </p>
+
+                <button
+                    class="primary-btn"
+                    id="genericAction"
+                >
+                    Create a trip →
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <footer>
+
+            <span>
+                NOMAD TRAVEL
+            </span>
+
+            <span>
+                Travel more. Spend smarter.
+            </span>
+
+            <span>
+                © 2026
+            </span>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<!-- ================================
+     TRIP MODAL
+================================= -->
+
+<div
+    class="modal"
+    id="tripModal"
+    aria-hidden="true"
+>
+
+    <div
+        class="modal-panel"
+        role="dialog"
+        aria-modal="true"
+    >
+
+        <button
+            class="modal-close"
+            data-close-modal
+            aria-label="Close"
+        >
+            ×
+        </button>
+
+        <span class="label">
+            NEW JOURNEY
+        </span>
+
+        <h2>
+            Create your trip
+        </h2>
+
+        <form id="tripForm">
+
+            <label>
+                Destination
+
+                <input
+                    id="destinationInput"
+                    type="text"
+                    placeholder="e.g. Goa"
+                    required
+                >
+
+            </label>
+
+
+            <div class="form-grid">
+
+                <label>
+                    Budget
+
+                    <input
+                        id="tripBudgetInput"
+                        type="number"
+                        min="1"
+                        placeholder="₹20,000"
+                        required
+                    >
+
+                </label>
+
+
+                <label>
+                    Travelers
+
+                    <input
+                        id="travelerInput"
+                        type="number"
+                        min="1"
+                        value="2"
+                        required
+                    >
+
+                </label>
+
+            </div>
+
+
+            <button
+                class="primary-btn submit-btn"
+                type="submit"
+            >
+                Create trip
+                <span>→</span>
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ================================
+     EXPENSE MODAL
+================================= -->
+
+<div
+    class="modal"
+    id="expenseModal"
+    aria-hidden="true"
+>
+
+    <div class="modal-panel">
+
+        <button
+            class="modal-close"
+            data-close-modal
+        >
+            ×
+        </button>
+
+        <span class="label">
+            BUDGET
+        </span>
+
+        <h2>
+            Add expense
+        </h2>
+
+        <form id="expenseForm">
+
+            <label>
+                Expense name
+
+                <input
+                    id="expenseName"
+                    type="text"
+                    placeholder="Hotel"
+                    required
+                >
+            </label>
+
+
+            <label>
+                Amount
+
+                <input
+                    id="expenseAmount"
+                    type="number"
+                    min="1"
+                    placeholder="₹1,500"
+                    required
+                >
+            </label>
+
+
+            <button
+                class="primary-btn submit-btn"
+                type="submit"
+            >
+                Add expense
+                <span>→</span>
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ================================
+     TOAST
+================================= -->
+
+<div
+    class="toast"
+    id="t
