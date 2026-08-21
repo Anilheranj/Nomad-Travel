@@ -26,6 +26,9 @@
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap"
         rel="stylesheet"
     >
+    <link
+    rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -504,70 +507,64 @@
                     </div>
 
 
-                    <div class="map">
+                <div id="nomadMap" class="map"></div>
+                    <div id="routeInputs">
 
-                        <div class="map-lines"></div>
+    <div class="route-input-row">
 
-                        <svg
-                            viewBox="0 0 600 300"
-                            preserveAspectRatio="none"
-                        >
+        <span class="route-number">
+            1
+        </span>
 
-                            <path
-                                d="M80 230 C180 200, 190 100, 300 150 S430 240, 520 70"
-                            />
+        <div class="location-picker">
 
-                        </svg>
+            <input
+                type="text"
+                class="route-location"
+                placeholder="Choose starting location"
+                autocomplete="off"
+            >
 
+            <div
+                class="location-suggestions"
+            ></div>
 
-                        <button
-                            class="map-pin"
-                            style="left:14%;bottom:18%"
-                            data-location="Chandigarh"
-                        >
-                        </button>
+        </div>
 
-
-                        <button
-                            class="map-pin"
-                            style="left:49%;top:43%"
-                            data-location="Manali"
-                        >
-                        </button>
+    </div>
 
 
-                        <button
-                            class="map-pin"
-                            style="right:12%;top:19%"
-                            data-location="Kasol"
-                        >
-                        </button>
+    <div class="route-input-row">
 
+        <span class="route-number">
+            2
+        </span>
 
-                        <span
-                            class="map-label"
-                            style="left:8%;bottom:8%"
-                        >
-                            Chandigarh
-                        </span>
+        <div class="location-picker">
 
+            <input
+                type="text"
+                class="route-location"
+                placeholder="Choose destination"
+                autocomplete="off"
+            >
 
-                        <span
-                            class="map-label"
-                            style="left:46%;top:51%"
-                        >
-                            Manali
-                        </span>
+            <div
+                class="location-suggestions"
+            ></div>
 
+        </div>
 
-                        <span
-                            class="map-label"
-                            style="right:7%;top:27%"
-                        >
-                            Kasol
-                        </span>
+    </div>
 
-                    </div>
+</div>
+
+<button
+    id="calculateRouteBtn"
+    type="button"
+>
+    Calculate route
+</button>
 
                 </article>
 
